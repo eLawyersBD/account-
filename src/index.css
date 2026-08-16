@@ -1,0 +1,166 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+section[id] {
+  scroll-margin-top: 5rem;
+}
+
+@keyframes successPop {
+  0% {
+    transform: scale(0.5) rotate(-10deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15) rotate(5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes ringPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 18px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes confettiFloat {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-40px) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 32s linear infinite;
+}
+
+.animate-success-pop {
+  animation: successPop 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-ring-pulse {
+  animation: ringPulse 2s infinite;
+}
+
+.animate-fade-in-scale {
+  animation: fadeInScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-confetti {
+  animation: confettiFloat 1.2s ease-out forwards;
+}
+
+/* ==========================================
+   PRINT STYLES FOR ADVISORY DOCUMENTS
+   ========================================== */
+@media print {
+  /* Hide non-printable interactive overlay elements */
+  iframe,
+  button:not(.print-keep),
+  .no-print,
+  #cookie-banner,
+  .fixed,
+  .sticky,
+  nav,
+  footer,
+  .animate-pulse,
+  .animate-ring-pulse,
+  .animate-marquee {
+    display: none !important;
+  }
+
+  body {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 11pt !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Reset layout containers for paper page flow */
+  main, section, div {
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  section {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Service Card & Package Card Print Formatting */
+  .service-card,
+  .package-card,
+  .bg-white,
+  .bg-slate-900 {
+    border: 1px solid #cbd5e1 !important;
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 1rem !important;
+    padding: 1rem !important;
+    border-radius: 8px !important;
+  }
+
+  h1, h2, h3, h4 {
+    color: #0f172a !important;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  p, li {
+    color: #334155 !important;
+  }
+
+  a {
+    text-decoration: underline !important;
+    color: #1e40af !important;
+  }
+
+  /* Ensure background gradients don't render black boxes */
+  .bg-gradient-to-r,
+  .bg-gradient-to-b,
+  .bg-slate-950,
+  .bg-slate-900 {
+    background: #ffffff !important;
+  }
+}
+

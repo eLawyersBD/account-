@@ -1,0 +1,48 @@
+{
+  "entities": {
+    "ConsultationRequest": {
+      "title": "Consultation Request",
+      "description": "Advisory consultation request submitted by prospective client",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "format": "email", "maxLength": 100 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "company": { "type": "string", "maxLength": 100 },
+        "service": { "type": "string", "maxLength": 100 },
+        "message": { "type": "string", "maxLength": 1000 },
+        "status": { "type": "string", "enum": ["pending", "contacted", "scheduled", "completed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "createdAt"]
+    },
+    "Article": {
+      "title": "Article",
+      "description": "Knowledge Center article managed via Firestore CMS",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string", "maxLength": 200 },
+        "category": { "type": "string", "enum": ["Article", "Template", "Guide"] },
+        "readTime": { "type": "string", "maxLength": 50 },
+        "date": { "type": "string", "maxLength": 50 },
+        "excerpt": { "type": "string", "maxLength": 500 },
+        "content": { "type": "string", "maxLength": 10000 },
+        "author": { "type": "string", "maxLength": 100 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "category", "excerpt", "content", "author", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/consultation_requests/{requestId}": {
+      "schema": { "$ref": "#/entities/ConsultationRequest" },
+      "description": "Collection of incoming advisory consultation bookings"
+    },
+    "/articles/{articleId}": {
+      "schema": { "$ref": "#/entities/Article" },
+      "description": "Collection of Knowledge Center articles and guides"
+    }
+  }
+}
