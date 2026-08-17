@@ -1,5 +1,107 @@
 {
   "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Authenticated client user profile",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string", "maxLength": 100 },
+        "companyName": { "type": "string", "maxLength": 100 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "role": { "type": "string", "maxLength": 50 },
+        "photoURL": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "email"]
+    },
+    "ClientProject": {
+      "title": "Client Project",
+      "description": "Advisory project engagement tracking status and milestones",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string", "maxLength": 200 },
+        "serviceType": { "type": "string", "maxLength": 100 },
+        "companyName": { "type": "string", "maxLength": 100 },
+        "status": { "type": "string", "enum": ["discovery", "in_progress", "review", "completed", "on_hold"] },
+        "progressPercentage": { "type": "number", "minimum": 0, "maximum": 100 },
+        "startDate": { "type": "string" },
+        "targetCompletionDate": { "type": "string" },
+        "leadConsultantName": { "type": "string", "maxLength": 100 },
+        "leadConsultantRole": { "type": "string", "maxLength": 100 },
+        "leadConsultantEmail": { "type": "string", "format": "email" },
+        "leadConsultantAvatar": { "type": "string" },
+        "budgetTotal": { "type": "number" },
+        "budgetSpent": { "type": "number" },
+        "description": { "type": "string", "maxLength": 2000 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "status", "progressPercentage"]
+    },
+    "ClientInvoice": {
+      "title": "Client Invoice",
+      "description": "Billing statements and payment records for advisory services",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "projectId": { "type": "string" },
+        "invoiceNumber": { "type": "string", "maxLength": 50 },
+        "issueDate": { "type": "string" },
+        "dueDate": { "type": "string" },
+        "amount": { "type": "number", "minimum": 0 },
+        "currency": { "type": "string", "maxLength": 10 },
+        "status": { "type": "string", "enum": ["pending", "paid", "overdue", "in_review"] },
+        "description": { "type": "string", "maxLength": 500 },
+        "paidAt": { "type": "string", "format": "date-time" },
+        "paymentMethod": { "type": "string", "maxLength": 50 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "invoiceNumber", "amount", "status", "dueDate"]
+    },
+    "ClientDocument": {
+      "title": "Client Document",
+      "description": "Shared consultancy decks, financial models, audits, and deliverables",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "projectId": { "type": "string" },
+        "title": { "type": "string", "maxLength": 200 },
+        "category": { "type": "string", "enum": ["Strategy Deck", "Financial Model", "Audit Report", "SOP Playbook", "Contract / NDA", "Deliverable"] },
+        "fileName": { "type": "string", "maxLength": 200 },
+        "fileSize": { "type": "string", "maxLength": 30 },
+        "fileType": { "type": "string", "maxLength": 30 },
+        "downloadUrl": { "type": "string" },
+        "version": { "type": "string", "maxLength": 20 },
+        "confidential": { "type": "boolean" },
+        "sharedBy": { "type": "string", "maxLength": 100 },
+        "uploadedAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "category", "fileName"]
+    },
+    "PortalMessage": {
+      "title": "Portal Message",
+      "description": "Direct communication message between client and advisory team",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "projectId": { "type": "string" },
+        "senderName": { "type": "string", "maxLength": 100 },
+        "senderRole": { "type": "string", "maxLength": 100 },
+        "senderType": { "type": "string", "enum": ["client", "consultant"] },
+        "message": { "type": "string", "maxLength": 2000 },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "senderName", "senderType", "message"]
+    },
     "ConsultationRequest": {
       "title": "Consultation Request",
       "description": "Advisory consultation request submitted by prospective client",
@@ -33,9 +135,74 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["title", "category", "excerpt", "content", "author", "createdAt"]
+    },
+    "MilestoneComment": {
+      "title": "Milestone Comment",
+      "description": "Real-time discussion comments on project timeline milestones between consultants and clients",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "projectId": { "type": "string" },
+        "milestoneId": { "type": "string" },
+        "milestoneTitle": { "type": "string", "maxLength": 200 },
+        "userId": { "type": "string" },
+        "authorName": { "type": "string", "maxLength": 100 },
+        "authorRole": { "type": "string", "maxLength": 100 },
+        "authorAvatar": { "type": "string" },
+        "authorType": { "type": "string", "enum": ["client", "consultant"] },
+        "content": { "type": "string", "maxLength": 3000 },
+        "tag": { "type": "string", "enum": ["Status Update", "Clarification", "Approval", "Deliverable Review", "Feedback", "General"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["projectId", "milestoneId", "userId", "authorName", "authorType", "content"]
+    },
+    "TimeEntry": {
+      "title": "Time Entry",
+      "description": "Consultant time tracking log for project milestones",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "projectId": { "type": "string" },
+        "milestoneId": { "type": "string" },
+        "userId": { "type": "string" },
+        "consultantName": { "type": "string", "maxLength": 100 },
+        "hours": { "type": "number", "minimum": 0 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "date": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["projectId", "milestoneId", "userId", "hours", "date"]
     }
   },
   "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Client profile records"
+    },
+    "/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/ClientProject" },
+      "description": "Advisory project records"
+    },
+    "/invoices/{invoiceId}": {
+      "schema": { "$ref": "#/entities/ClientInvoice" },
+      "description": "Billing statements and invoice records"
+    },
+    "/documents/{documentId}": {
+      "schema": { "$ref": "#/entities/ClientDocument" },
+      "description": "Consultancy deliverables and shared files"
+    },
+    "/portal_messages/{messageId}": {
+      "schema": { "$ref": "#/entities/PortalMessage" },
+      "description": "Advisory communication messages"
+    },
+    "/milestone_comments/{commentId}": {
+      "schema": { "$ref": "#/entities/MilestoneComment" },
+      "description": "Real-time discussion comments on project milestones"
+    },
+    "/milestone_time_entries/{entryId}": {
+      "schema": { "$ref": "#/entities/TimeEntry" },
+      "description": "Time logging records for project milestones"
+    },
     "/consultation_requests/{requestId}": {
       "schema": { "$ref": "#/entities/ConsultationRequest" },
       "description": "Collection of incoming advisory consultation bookings"

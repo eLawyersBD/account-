@@ -1,6 +1,6 @@
 {
   "name": "Accounticca",
-  "description": "Business Consultancy & Growth Advisory - Your Strategic Partner for Business Growth, Finance & Operational Excellence",
+  "description": "Business Consultancy & Growth Advisory platform featuring an executive Client Portal, Firebase Firestore persistent storage, interactive Gantt project timelines, and secure document vaults.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

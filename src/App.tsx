@@ -34,6 +34,7 @@ import { GoogleWorkspaceModal } from './components/GoogleWorkspaceModal';
 import { FinanceAct2026TaxCalculator } from './components/FinanceAct2026TaxCalculator';
 import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { GlobalSearchModal } from './components/GlobalSearchModal';
+import { ClientPortal } from './components/portal/ClientPortal';
 import { ArticleItem, CourseItem } from './types';
 import { useActiveSectionObserver } from './hooks/useActiveSectionObserver';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
@@ -58,6 +59,7 @@ export default function App() {
   const [workspaceModalOpen, setWorkspaceModalOpen] = useState(false);
   const [workspaceModalTab, setWorkspaceModalTab] = useState<'drive' | 'sheets' | 'gmail' | 'calendar' | 'forms'>('drive');
   const [healthAssessmentOpen, setHealthAssessmentOpen] = useState(false);
+  const [clientPortalOpen, setClientPortalOpen] = useState(false);
 
   const handleOpenWorkspaceSuite = (tab: 'drive' | 'sheets' | 'gmail' | 'calendar' | 'forms' = 'drive') => {
     setWorkspaceModalTab(tab);
@@ -119,6 +121,7 @@ export default function App() {
         onOpenGoogleMeet={() => setGoogleMeetModalOpen(true)}
         onOpenWorkspaceSuite={handleOpenWorkspaceSuite}
         onOpenSearch={() => setSearchModalOpen(true)}
+        onOpenClientPortal={() => setClientPortalOpen(true)}
         activeSection={activeSection}
         setActiveSection={setActiveSection}
       />
@@ -129,6 +132,7 @@ export default function App() {
           onOpenConsultation={() => handleOpenConsultation()}
           onOpenMeeting={handleOpenMeeting}
           onOpenHealthAssessment={() => setHealthAssessmentOpen(true)}
+          onOpenClientPortal={() => setClientPortalOpen(true)}
         />
 
         <TrustedByCarousel />
@@ -288,6 +292,16 @@ export default function App() {
           onOpenConsultation={(note) => handleOpenConsultation(note)}
         />
       )}
+
+      {/* Secure Client Portal (Firestore Synchronized) */}
+      <ClientPortal
+        isOpen={clientPortalOpen}
+        onClose={() => setClientPortalOpen(false)}
+        onOpenConsultation={() => {
+          setClientPortalOpen(false);
+          handleOpenConsultation();
+        }}
+      />
 
       {/* Keyboard Shortcuts Modal Guide */}
       <KeyboardShortcutsModal

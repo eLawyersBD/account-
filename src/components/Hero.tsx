@@ -6,12 +6,14 @@ interface HeroProps {
   onOpenConsultation: () => void;
   onOpenMeeting: () => void;
   onOpenHealthAssessment: () => void;
+  onOpenClientPortal?: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
   onOpenConsultation,
   onOpenMeeting,
-  onOpenHealthAssessment
+  onOpenHealthAssessment,
+  onOpenClientPortal
 }) => {
   return (
     <section id="home" className="relative bg-slate-50 text-slate-900 border-b border-slate-200 overflow-hidden py-20 lg:py-28">
@@ -24,9 +26,22 @@ export const Hero: React.FC<HeroProps> = ({
           
           {/* Hero Content */}
           <AnimatedSection animation="fade-right" className="lg:col-span-7 space-y-8">
-            <div className="inline-flex items-center space-x-2 bg-blue-50/90 border border-blue-200/90 px-4 py-1.5 rounded-full text-blue-700 text-xs sm:text-sm font-bold tracking-wider uppercase shadow-2xs">
-              <Sparkles className="w-4 h-4 text-blue-600 shrink-0" />
-              <span>Part of the E-Lawyers Ecosystem • Beyond Legal Services</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center space-x-2 bg-blue-50/90 border border-blue-200/90 px-4 py-1.5 rounded-full text-blue-700 text-xs sm:text-sm font-bold tracking-wider uppercase shadow-2xs">
+                <Sparkles className="w-4 h-4 text-blue-600 shrink-0" />
+                <span>Part of the E-Lawyers Ecosystem • Beyond Legal Services</span>
+              </div>
+
+              {onOpenClientPortal && (
+                <button
+                  onClick={onOpenClientPortal}
+                  className="inline-flex items-center space-x-1.5 bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-1.5 rounded-full text-xs font-bold transition shadow-xs cursor-pointer active:scale-95"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Client Portal</span>
+                  <ArrowRight className="w-3 h-3 text-blue-300" />
+                </button>
+              )}
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-[68px] font-extrabold font-serif tracking-tight text-slate-900 leading-[1.12] lg:leading-[1.08]">

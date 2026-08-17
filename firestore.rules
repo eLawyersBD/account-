@@ -6,6 +6,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
     function isValidId(id) {
       return id is string && id.size() <= 128;
     }
@@ -25,6 +33,48 @@ service cloud.firestore {
         && data.createdAt is timestamp;
     }
 
+    // Client User Profiles
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // Client Projects
+    match /projects/{projectId} {
+      allow read, update, delete: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+
+    // Client Invoices
+    match /invoices/{invoiceId} {
+      allow read, update, delete: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+
+    // Client Consultancy Documents
+    match /documents/{documentId} {
+      allow read, update, delete: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+
+    // Portal Direct Messages / Advisory Helpdesk
+    match /portal_messages/{messageId} {
+      allow read, update, delete: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+
+    // Real-Time Project Milestone Comments & Updates
+    match /milestone_comments/{commentId} {
+      allow read, update, delete: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+
+    // Project Time Tracking Entries
+    match /milestone_time_entries/{entryId} {
+      allow read, update, delete: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+
+    // Prospective Consultation Requests
     match /consultation_requests/{requestId} {
       allow create: if isValidId(requestId) 
         && isValidConsultationRequest(request.resource.data)
@@ -32,6 +82,7 @@ service cloud.firestore {
       allow read, update, delete: if false;
     }
 
+    // Knowledge Center Articles
     match /articles/{articleId} {
       allow read: if true;
       allow create: if isValidId(articleId)

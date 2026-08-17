@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   Menu, X, Calendar, PhoneCall, Search, Video, Sparkles, ChevronDown, 
   Rocket, Target, TrendingUp, BookOpen, Cog, Cpu, Users, Megaphone, Building2,
-  FileText, BookMarked, Layers, ArrowRight, ShieldCheck, Briefcase
+  FileText, BookMarked, Layers, ArrowRight, ShieldCheck, Briefcase, Lock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AccounticcaLogo } from './AccounticcaLogo';
@@ -13,6 +13,7 @@ interface NavbarProps {
   onOpenGoogleMeet?: () => void;
   onOpenWorkspaceSuite?: (tab?: 'drive' | 'sheets' | 'gmail' | 'calendar' | 'forms') => void;
   onOpenSearch?: () => void;
+  onOpenClientPortal?: () => void;
   activeSection: string;
   setActiveSection: (section: string) => void;
 }
@@ -23,6 +24,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenGoogleMeet,
   onOpenWorkspaceSuite,
   onOpenSearch,
+  onOpenClientPortal,
   activeSection,
   setActiveSection
 }) => {
@@ -333,6 +335,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
+            {onOpenClientPortal && (
+              <button
+                onClick={onOpenClientPortal}
+                className="px-3.5 xl:px-4 py-2 xl:py-2.5 rounded-full border border-blue-200 bg-blue-50/70 hover:bg-blue-100/80 text-blue-900 text-xs xl:text-sm font-bold transition flex items-center space-x-2 shadow-2xs group"
+                title="Secure Executive Client Portal"
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <Lock className="w-3.5 h-3.5 text-blue-700 group-hover:scale-110 transition-transform" />
+                <span>Client Portal</span>
+              </button>
+            )}
+
             <button
               onClick={onOpenConsultation}
               className="px-4 xl:px-5 py-2 xl:py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs xl:text-sm transition shadow-md shadow-blue-500/20 flex items-center space-x-2 active:scale-98"
@@ -344,6 +358,17 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Mobile Menu Button & Search Trigger */}
           <div className="flex lg:hidden items-center space-x-2">
+            {onOpenClientPortal && (
+              <button
+                onClick={onOpenClientPortal}
+                className="px-2.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-900 text-xs font-bold flex items-center space-x-1"
+                title="Client Portal"
+              >
+                <Lock className="w-3.5 h-3.5 text-blue-700" />
+                <span>Portal</span>
+              </button>
+            )}
+
             {onOpenSearch && (
               <button
                 onClick={onOpenSearch}
@@ -478,6 +503,15 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
 
           <div className="pt-4 border-t border-slate-200 flex flex-col space-y-3">
+            {onOpenClientPortal && (
+              <button
+                onClick={() => { setMobileMenuOpen(false); onOpenClientPortal(); }}
+                className="w-full py-3 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold flex items-center justify-center space-x-2 shadow-md shadow-slate-900/20"
+              >
+                <Lock className="w-4 h-4 text-emerald-400" />
+                <span>Executive Client Portal (Firestore)</span>
+              </button>
+            )}
             {onOpenWorkspaceSuite && (
               <button
                 onClick={() => { setMobileMenuOpen(false); onOpenWorkspaceSuite(); }}
