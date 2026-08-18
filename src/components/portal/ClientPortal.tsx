@@ -14,6 +14,7 @@ import {
   subscribeToClientInvoices, 
   subscribeToClientDocuments, 
   subscribeToPortalMessages,
+  subscribeToCommentsForProjects,
   seedInitialClientDataIfEmpty
 } from '../../lib/portalService';
 import { ProjectStatusView } from './ProjectStatusView';
@@ -76,9 +77,25 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
   const [targetUploadProjectId, setTargetUploadProjectId] = useState<string | undefined>(undefined);
   const [targetUploadProjectTitle, setTargetUploadProjectTitle] = useState<string | undefined>(undefined);
   const [uploadSuccessToast, setUploadSuccessToast] = useState<string | null>(null);
+  const [commentToast, setCommentToast] = useState<{message: string} | null>(null);
   const [milestoneNotification, setMilestoneNotification] = useState<{message: string} | null>(null);
 
   const prevProjectsRef = useRef<ClientProject[]>([]);
+  const lastCommentTimestamp = useRef(Date.now());
+
+  useEffect(() => {
+    if (!currentUser || projects.length === 0) return;
+    const projectIds = projects.map(p => p.id);
+    const unsub = subscribeToCommentsForProjects(projectIds, (comments) => {
+      const latest = comments[0];
+      if (latest && latest.authorType === 'consultant' && latest.createdAt?.toDate().getTime() > lastCommentTimestamp.current) {
+        setCommentToast({ message: `New comment from consultant on "${latest.milestoneTitle}"` });
+        lastCommentTimestamp.current = latest.createdAt?.toDate().getTime();
+        setTimeout(() => setCommentToast(null), 5000);
+      }
+    });
+    return unsub;
+  }, [currentUser, projects]);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -549,6 +566,20 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
           <button 
             onClick={() => setMilestoneNotification(null)}
             className="text-blue-300 hover:text-white p-1"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* New Comment Notification Toast */}
+      {commentToast && (
+        <div className="fixed bottom-40 right-6 z-50 bg-indigo-900 text-white px-4 py-3 rounded-2xl shadow-xl border border-indigo-700 flex items-center space-x-3 text-xs animate-slideUp">
+          <MessageSquare className="w-4 h-4 text-indigo-300 shrink-0" />
+          <span className="font-semibold">{commentToast.message}</span>
+          <button 
+            onClick={() => setCommentToast(null)}
+            className="text-indigo-300 hover:text-white p-1"
           >
             <X className="w-3.5 h-3.5" />
           </button>

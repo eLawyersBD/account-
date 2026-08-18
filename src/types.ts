@@ -115,6 +115,7 @@ export interface ClientProfile {
 export type ProjectStatus = 'discovery' | 'in_progress' | 'review' | 'completed' | 'on_hold';
 
 export type MilestoneStatus = 'in_progress' | 'completed' | 'delayed' | 'upcoming' | 'review' | 'on_hold' | 'finalized';
+export type MilestonePriority = 'low' | 'medium' | 'high';
 
 export interface ProjectMilestone {
   id: string;
@@ -122,6 +123,7 @@ export interface ProjectMilestone {
   startDate?: string;
   dueDate: string;
   status: MilestoneStatus | string;
+  priority: MilestonePriority;
   description?: string;
   phase?: string;
   progress?: number;

@@ -58,13 +58,21 @@ export const WhyChooseUs: React.FC = () => {
               duration={600}
             >
               <div
-                className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-blue-500/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 space-y-4 h-full"
+                className="bg-white border border-slate-200 rounded-2xl hover:border-blue-500/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 space-y-0 h-full overflow-hidden"
               >
-                <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
-                  {item.icon}
+                <img
+                  src={`https://picsum.photos/seed/${idx}/400/200`}
+                  alt={item.title}
+                  className="w-full h-40 object-cover"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="p-6 space-y-4">
+                  <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-xl font-serif font-bold text-slate-900">{item.title}</h3>
+                  <p className="text-slate-600 text-sm leading-relaxed">{item.description}</p>
                 </div>
-                <h3 className="text-xl font-serif font-bold text-slate-900">{item.title}</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">{item.description}</p>
               </div>
             </AnimatedSection>
           ))}

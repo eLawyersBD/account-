@@ -43,24 +43,32 @@ export const IndustriesSection: React.FC = () => {
               duration={600}
             >
               <div
-                className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-blue-500/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 space-y-4 group h-full"
+                className="bg-white border border-slate-200 rounded-2xl hover:border-blue-500/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 space-y-0 group h-full overflow-hidden"
               >
-                <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center group-hover:bg-blue-50 group-hover:border-blue-200 transition">
-                  {getIndustryIcon(ind.icon)}
-                </div>
+                <img
+                  src={`https://picsum.photos/seed/${ind.id}/400/200`}
+                  alt={ind.title}
+                  className="w-full h-40 object-cover"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="p-6 space-y-4">
+                  <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center group-hover:bg-blue-50 group-hover:border-blue-200 transition">
+                    {getIndustryIcon(ind.icon)}
+                  </div>
 
-                <div>
-                  <h3 className="text-xl font-serif font-bold text-slate-900 group-hover:text-blue-600 transition mb-2">
-                    {ind.title}
-                  </h3>
-                  <p className="text-slate-600 text-sm leading-relaxed mb-4">
-                    {ind.description}
-                  </p>
-                </div>
+                  <div>
+                    <h3 className="text-xl font-serif font-bold text-slate-900 group-hover:text-blue-600 transition mb-2">
+                      {ind.title}
+                    </h3>
+                    <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                      {ind.description}
+                    </p>
+                  </div>
 
-                <div className="pt-4 border-t border-slate-200 flex items-center space-x-2 text-xs text-blue-600 font-medium">
-                  <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  <span>{ind.keyMetrics}</span>
+                  <div className="pt-4 border-t border-slate-200 flex items-center space-x-2 text-xs text-blue-600 font-medium">
+                    <CheckCircle2 className="w-4 h-4 shrink-0" />
+                    <span>{ind.keyMetrics}</span>
+                  </div>
                 </div>
               </div>
             </AnimatedSection>

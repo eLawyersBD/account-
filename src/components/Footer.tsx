@@ -21,7 +21,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveSection, onOpenConsulta
   };
 
   return (
-    <footer id="footer" className="bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 text-slate-300 border-t border-slate-800/80 pt-16 pb-12 relative overflow-hidden">
+    <footer id="footer" className="w-screen m-0 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 text-slate-300 border-t border-slate-800/80 pt-16 pb-12 relative overflow-hidden">
       {/* Decorative subtle background glow */}
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl pointer-events-none" />
 

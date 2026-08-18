@@ -16,7 +16,7 @@ export const Hero: React.FC<HeroProps> = ({
   onOpenClientPortal
 }) => {
   return (
-    <section id="home" className="relative bg-slate-50 text-slate-900 border-b border-slate-200 overflow-hidden py-20 lg:py-28">
+    <section id="home" className="relative bg-slate-50 text-slate-900 border-b border-slate-200 overflow-hidden pt-[48px] pb-[79px]">
       {/* Background Decorative Glows */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute top-1/2 right-10 w-[400px] h-[400px] bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none" />

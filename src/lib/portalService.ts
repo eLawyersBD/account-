@@ -1207,3 +1207,20 @@ export async function approveMilestone(
     read: false
   });
 }
+
+export function subscribeToCommentsForProjects(
+  projectIds: string[],
+  onComments: (comments: MilestoneComment[]) => void
+) {
+  if (projectIds.length === 0) return () => {};
+
+  const q = query(
+    collection(db, 'milestone_comments'),
+    where('projectId', 'in', projectIds),
+    orderBy('createdAt', 'desc')
+  );
+  return onSnapshot(q, (snapshot) => {
+    const comments: MilestoneComment[] = snapshot.docs.map(doc => doc.data() as MilestoneComment);
+    onComments(comments);
+  });
+}

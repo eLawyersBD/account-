@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react';
-import { ClientProject, ProjectMilestone, ClientDocument, MilestoneStatus } from '../../types';
+import React, { useState, useMemo, useEffect } from 'react';
+import { ClientProject, ProjectMilestone, ClientDocument, MilestoneStatus, MilestonePriority } from '../../types';
 import { updateMilestoneStatus, updateMilestoneDetails, addProjectMilestone, approveMilestone } from '../../lib/portalService';
 import { auth } from '../../lib/firebase';
 import { subscribeToProjectTimeEntries } from '../../lib/portalService';
 import { TimeEntry } from '../../types';
 import { TimeTrackingModal } from './TimeTrackingModal';
-import { X } from 'lucide-react';
+import { X, ArrowDown, ArrowUp, Minus } from 'lucide-react';
 import { 
   CheckCircle2, 
   Clock, 
@@ -50,6 +50,11 @@ export const getMilestoneStatusConfig = (status: string, dueDate?: string) => {
   // Check if milestone is overdue
   const isOverdue = dueDate && new Date(dueDate).getTime() < new Date().setHours(0, 0, 0, 0) && normalized !== 'completed';
 
+  // Check if milestone is due within next 3 days
+  const isDueSoon = dueDate && !isOverdue && normalized !== 'completed' && normalized !== 'finalized' && 
+    (new Date(dueDate).getTime() - new Date().getTime()) < (3 * 24 * 60 * 60 * 1000) &&
+    (new Date(dueDate).getTime() - new Date().getTime()) > 0;
+
   switch (normalized) {
     case 'completed':
       return {
@@ -84,17 +89,17 @@ export const getMilestoneStatusConfig = (status: string, dueDate?: string) => {
     case 'in_progress':
       return {
         key: 'in_progress',
-        label: 'In Progress',
-        badgeBg: 'bg-blue-50 border-blue-200/80 text-blue-800',
-        badgePill: 'bg-blue-600 text-white',
-        dotColor: 'bg-blue-600',
-        ganttBar: 'bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 text-white shadow-md shadow-blue-500/20 ring-2 ring-blue-400/40 border border-blue-400',
-        icon: CircleDot,
-        iconColor: 'text-blue-600',
-        cardBorder: 'border-blue-300/80 bg-blue-50/30 ring-1 ring-blue-500/10 hover:bg-blue-50/60',
-        stepNode: 'bg-blue-600 text-white ring-4 ring-blue-100 shadow-md animate-pulse',
-        textColor: 'text-blue-700',
-        description: 'Active sprint execution in progress'
+        label: isDueSoon ? 'Due Soon' : 'In Progress',
+        badgeBg: isDueSoon ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-blue-50 border-blue-200/80 text-blue-800',
+        badgePill: isDueSoon ? 'bg-amber-500 text-white' : 'bg-blue-600 text-white',
+        dotColor: isDueSoon ? 'bg-amber-500' : 'bg-blue-600',
+        ganttBar: isDueSoon ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white ring-2 ring-amber-300' : 'bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 text-white shadow-md shadow-blue-500/20 ring-2 ring-blue-400/40 border border-blue-400',
+        icon: isDueSoon ? Clock : CircleDot,
+        iconColor: isDueSoon ? 'text-amber-600' : 'text-blue-600',
+        cardBorder: isDueSoon ? 'border-amber-300 bg-amber-50/30 ring-1 ring-amber-500/10' : 'border-blue-300/80 bg-blue-50/30 ring-1 ring-blue-500/10 hover:bg-blue-50/60',
+        stepNode: isDueSoon ? 'bg-amber-500 text-white ring-4 ring-amber-100 shadow-md' : 'bg-blue-600 text-white ring-4 ring-blue-100 shadow-md animate-pulse',
+        textColor: isDueSoon ? 'text-amber-700' : 'text-blue-700',
+        description: isDueSoon ? 'Action required: deadline approaching' : 'Active sprint execution in progress'
       };
     case 'delayed':
       return {
@@ -173,7 +178,10 @@ export const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({
   const [isAddMilestoneModalOpen, setIsAddMilestoneModalOpen] = useState(false);
   const [isTimeTrackerModalOpen, setIsTimeTrackerModalOpen] = useState(false);
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
+  const [comments, setComments] = useState<MilestoneComment[]>([]);
+  const [newComment, setNewComment] = useState('');
   const [savingMilestone, setSavingMilestone] = useState(false);
+  const [savingComment, setSavingComment] = useState(false);
   
   useEffect(() => {
     if (!project.id || !auth.currentUser) return;
@@ -182,6 +190,37 @@ export const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({
     });
     return () => unsubscribe();
   }, [project.id, auth.currentUser]);
+
+  useEffect(() => {
+    if (!activeMilestone) return;
+    const unsubscribe = subscribeToMilestoneComments(activeMilestone.id, (data) => {
+      setComments(data);
+    });
+    return () => unsubscribe();
+  }, [activeMilestone]);
+
+  const handlePostComment = async () => {
+    if (!newComment.trim() || !activeMilestone || !auth.currentUser) return;
+    setSavingComment(true);
+    try {
+      await addMilestoneComment({
+        projectId: project.id,
+        milestoneId: activeMilestone.id,
+        milestoneTitle: activeMilestone.title,
+        userId: auth.currentUser.uid,
+        authorName: auth.currentUser.displayName || 'Client',
+        authorRole: 'Client',
+        authorType: 'client',
+        content: newComment,
+        tag: 'General'
+      });
+      setNewComment('');
+    } catch (error) {
+      console.error('Error posting comment:', error);
+    } finally {
+      setSavingComment(false);
+    }
+  };
   const [editingDelayReason, setEditingDelayReason] = useState(false);
   const [tempDelayReason, setTempDelayReason] = useState('');
   
@@ -189,6 +228,7 @@ export const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({
   const [newTitle, setNewTitle] = useState('');
   const [newPhase, setNewPhase] = useState('Phase 3: Deployment');
   const [newStatus, setNewStatus] = useState<MilestoneStatus>('upcoming');
+  const [newPriority, setNewPriority] = useState<MilestonePriority>('medium');
   const [newStartDate, setNewStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [newDueDate, setNewDueDate] = useState(
     new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]
@@ -354,6 +394,7 @@ export const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({
           startDate: newStartDate,
           dueDate: newDueDate,
           status: newStatus,
+          priority: newPriority,
           progress: initialProgress,
           owner: newOwner.trim(),
           description: newDescription.trim() || 'Strategic delivery checkpoint defined by executive client committee.',
@@ -418,6 +459,22 @@ export const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({
                 Real-time milestone tracking with visual status indicators queried from Firestore
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* Completion Progress Header */}
+        <div className="flex items-center space-x-3 bg-slate-50 px-4 py-3 rounded-2xl border border-slate-200">
+          <div className="text-right">
+            <p className="text-[10px] uppercase font-bold text-slate-500">Overall Progress</p>
+            <p className="text-lg font-bold text-slate-900 font-mono">
+              {milestones.length > 0 ? Math.round((completedCount / milestones.length) * 100) : 0}%
+            </p>
+          </div>
+          <div className="w-16 h-2 bg-slate-200 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+              style={{ width: `${milestones.length > 0 ? (completedCount / milestones.length) * 100 : 0}%` }}
+            />
           </div>
         </div>
 
@@ -1137,28 +1194,41 @@ export const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({
             </div>
           )}
 
-          {/* Interactive Progress Slider */}
-          <div className="bg-white/5 border border-white/10 p-4 rounded-2xl space-y-2">
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-slate-300 font-semibold">Sprint Progress Slider</span>
-              <span className="font-mono font-bold text-emerald-400">
-                {activeMilestone.progress ?? (activeMilestone.status === 'completed' ? 100 : activeMilestone.status === 'in_progress' ? 65 : 0)}%
-              </span>
+          {/* Comments Section */}
+          <div className="bg-white/5 border border-white/10 p-4 rounded-2xl space-y-3">
+            <span className="font-bold text-slate-300 flex items-center space-x-1.5">
+              <MessageSquare className="w-4 h-4 text-slate-400" />
+              <span>Milestone Comments & Feedback</span>
+            </span>
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {comments.map((comment) => (
+                <div key={comment.id} className="p-2 bg-slate-900 rounded-xl text-xs">
+                  <div className="flex justify-between">
+                    <span className="font-bold text-blue-300">{comment.authorName}</span>
+                    <span className="text-slate-500 font-mono text-[10px]">
+                      {new Date(comment.createdAt?.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                  <p className="text-slate-200 mt-0.5">{comment.content}</p>
+                </div>
+              ))}
+              {comments.length === 0 && <p className="text-slate-500 text-xs italic">No comments yet.</p>}
             </div>
-
-            <input
-              type="range"
-              min="0"
-              max="100"
-              step="5"
-              value={activeMilestone.progress ?? (activeMilestone.status === 'completed' ? 100 : activeMilestone.status === 'in_progress' ? 65 : 0)}
-              onChange={(e) => handleProgressChange(activeMilestone.id, parseInt(e.target.value, 10))}
-              className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
-            />
-            <div className="flex justify-between text-[10px] text-slate-400 font-mono">
-              <span>0% (Not Started)</span>
-              <span>50% (Mid-Sprint Review)</span>
-              <span>100% (Signed-off)</span>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Write a comment..."
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                className="flex-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white"
+              />
+              <button 
+                onClick={handlePostComment}
+                disabled={savingComment}
+                className="px-3 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold disabled:opacity-50"
+              >
+                {savingComment ? '...' : 'Post'}
+              </button>
             </div>
           </div>
 
@@ -1278,6 +1348,36 @@ export const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({
                       >
                         <StIcon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : st.color}`} />
                         <span>{st.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Priority Selector */}
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Milestone Priority</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'low', label: 'Low', icon: ArrowDown, color: 'text-emerald-600', activeBg: 'bg-emerald-600 text-white' },
+                    { id: 'medium', label: 'Medium', icon: Minus, color: 'text-amber-600', activeBg: 'bg-amber-600 text-white' },
+                    { id: 'high', label: 'High', icon: ArrowUp, color: 'text-rose-600', activeBg: 'bg-rose-600 text-white' }
+                  ].map((pr) => {
+                    const PrIcon = pr.icon;
+                    const isSelected = newPriority === pr.id;
+                    return (
+                      <button
+                        key={pr.id}
+                        type="button"
+                        onClick={() => setNewPriority(pr.id as MilestonePriority)}
+                        className={`p-2.5 rounded-xl border text-xs font-bold transition flex items-center justify-center space-x-1.5 ${
+                          isSelected 
+                            ? `${pr.activeBg} border-transparent shadow-xs` 
+                            : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                        }`}
+                      >
+                        <PrIcon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : pr.color}`} />
+                        <span>{pr.label}</span>
                       </button>
                     );
                   })}

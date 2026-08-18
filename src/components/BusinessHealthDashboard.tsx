@@ -834,6 +834,9 @@ export const BusinessHealthDashboard: React.FC<BusinessHealthDashboardProps> = (
 
               {/* Card 3: Cash Runway Expansion */}
               <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-1">
+                <div className="w-full h-24 bg-blue-50 rounded-xl mb-3 flex items-center justify-center text-blue-300">
+                  <PieChartIcon className="w-10 h-10" />
+                </div>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   Cash Runway Security
                 </p>
@@ -933,7 +936,7 @@ export const BusinessHealthDashboard: React.FC<BusinessHealthDashboardProps> = (
               </div>
 
               {/* Action Callout inside Simulator */}
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+              <div className="bg-slate-50 border border-blue-500/30 hover:border-blue-500/60 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
                 <div className="space-y-0.5 text-center sm:text-left">
                   <p className="text-xs font-serif font-bold text-slate-900">
                     Want an exact financial audit tailored to your actual P&L?
