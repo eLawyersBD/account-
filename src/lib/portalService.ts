@@ -87,6 +87,7 @@ export async function seedInitialClientDataIfEmpty(
             startDate: '2026-06-15',
             dueDate: '2026-06-30',
             status: 'completed',
+            priority: 'high',
             phase: 'Phase 1: Discovery & Audit',
             progress: 100,
             owner: 'Sarah Jenkins, FCA',
@@ -100,6 +101,7 @@ export async function seedInitialClientDataIfEmpty(
             startDate: '2026-07-01',
             dueDate: '2026-07-25',
             status: 'completed',
+            priority: 'high',
             phase: 'Phase 2: Architecture & Setup',
             progress: 100,
             owner: 'Marcus Vance, CPA',
@@ -113,6 +115,7 @@ export async function seedInitialClientDataIfEmpty(
             startDate: '2026-07-26',
             dueDate: '2026-08-28',
             status: 'in_progress',
+            priority: 'medium',
             phase: 'Phase 3: Deployment & Analytics',
             progress: 75,
             owner: 'Sarah Jenkins, FCA',
@@ -126,6 +129,7 @@ export async function seedInitialClientDataIfEmpty(
             startDate: '2026-08-29',
             dueDate: '2026-09-30',
             status: 'upcoming',
+            priority: 'medium',
             phase: 'Phase 4: Handover & Governance',
             progress: 0,
             owner: 'Sarah Jenkins, FCA',
@@ -216,6 +220,7 @@ export async function seedInitialClientDataIfEmpty(
             title: 'Statutory Compliance & Exposure Audit',
             dueDate: '2026-03-20',
             status: 'completed',
+            priority: 'high',
             description: 'Zero penalty exposure audit completed across all corporate accounts.'
           },
           {
@@ -223,6 +228,7 @@ export async function seedInitialClientDataIfEmpty(
             title: 'Tax Optimization & Allowance Matrix',
             dueDate: '2026-04-18',
             status: 'completed',
+            priority: 'medium',
             description: 'Identified 22.4% in eligible capital allowance and R&D credits.'
           },
           {
@@ -230,6 +236,7 @@ export async function seedInitialClientDataIfEmpty(
             title: 'Final Executive Filing & Advisory Dossier',
             dueDate: '2026-05-15',
             status: 'completed',
+            priority: 'high',
             description: 'Delivered final board package and signed compliance certificate.'
           }
         ],
@@ -1055,6 +1062,38 @@ export async function addProjectMilestone(
 // ==========================================
 // REAL-TIME MILESTONE COMMENTS & DISCUSSIONS
 // ==========================================
+
+export function subscribeToMilestoneComments(
+  milestoneId: string,
+  callback: (comments: MilestoneComment[]) => void
+): () => void {
+  try {
+    const q = query(
+      collection(db, 'milestone_comments'),
+      where('milestoneId', '==', milestoneId)
+    );
+
+    return onSnapshot(q, (snapshot) => {
+      const comments: MilestoneComment[] = [];
+      snapshot.forEach((docSnap) => {
+        comments.push({ id: docSnap.id, ...(docSnap.data() as any) });
+      });
+
+      comments.sort((a, b) => {
+        const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+        const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+        return timeA - timeB;
+      });
+
+      callback(comments);
+    }, (err) => {
+      handleFirestoreError(err, OperationType.LIST, `milestone_comments`);
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.LIST, `milestone_comments`);
+    return () => {};
+  }
+}
 
 export function subscribeToProjectMilestoneComments(
   userId: string,

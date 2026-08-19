@@ -153,6 +153,7 @@ export default function App() {
           onOpenConsultation={(note) => handleOpenConsultation(note)}
           onOpenGoogleMeet={() => setGoogleMeetModalOpen(true)}
           onOpenWorkspaceSuite={handleOpenWorkspaceSuite}
+          onOpenClientPortal={() => setClientPortalOpen(true)}
         />
 
         <SectionDivider variant="slant" fillColor="fill-slate-900" heightClass="h-10 sm:h-14 lg:h-16" />

@@ -19,6 +19,8 @@ import {
 } from '../../lib/portalService';
 import { ProjectStatusView } from './ProjectStatusView';
 import { ProjectTimelineView } from './ProjectTimelineView';
+import { PendingDocumentReview } from './PendingDocumentReview';
+import { RecentActivityTimeline } from './RecentActivityTimeline';
 import { PerformanceMetricsTab } from './PerformanceMetricsTab';
 import { InvoicesView } from './InvoicesView';
 import { DocumentsVaultView } from './DocumentsVaultView';
@@ -477,6 +479,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
               {activeTab === 'projects' && (
                 <ProjectStatusView
                   projects={projects}
+                  documents={documents}
                   onOpenDocumentPreview={(doc) => setPreviewDoc(doc)}
                   onOpenConsultation={onOpenConsultation}
                   onOpenMessagesTab={() => setActiveTab('messages')}

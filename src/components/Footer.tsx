@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Globe, ShieldCheck } from 'lucide-react';
+import { Mail, Globe, ShieldCheck, Linkedin, Twitter, Youtube } from 'lucide-react';
 import { AccounticcaLogo } from './AccounticcaLogo';
 
 interface FooterProps {
@@ -100,10 +100,46 @@ export const Footer: React.FC<FooterProps> = ({ setActiveSection, onOpenConsulta
             </p>
             <button
               onClick={onOpenConsultation}
-              className="w-full py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition shadow-lg shadow-blue-500/20 active:scale-98"
+              className="w-full py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition shadow-lg shadow-blue-500/20 active:scale-98 cursor-pointer"
             >
               Get Free Consultation
             </button>
+
+            {/* Social Media Links */}
+            <div className="pt-2 border-t border-slate-800/80">
+              <span className="text-[11px] font-semibold text-slate-400 block mb-2.5 uppercase tracking-wider">
+                Connect With Us
+              </span>
+              <div className="flex items-center space-x-2.5">
+                <a
+                  href="https://www.linkedin.com/company/accounticca"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                  className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-blue-600 border border-slate-700/80 hover:border-blue-500 flex items-center justify-center text-slate-300 hover:text-white transition duration-200 shadow-2xs group"
+                >
+                  <Linkedin className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                </a>
+                <a
+                  href="https://twitter.com/accounticca"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Twitter / X"
+                  className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700/80 hover:border-slate-500 flex items-center justify-center text-slate-300 hover:text-white transition duration-200 shadow-2xs group"
+                >
+                  <Twitter className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                </a>
+                <a
+                  href="https://www.youtube.com/@accounticca"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="YouTube"
+                  className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-red-600 border border-slate-700/80 hover:border-red-500 flex items-center justify-center text-slate-300 hover:text-white transition duration-200 shadow-2xs group"
+                >
+                  <Youtube className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                </a>
+              </div>
+            </div>
           </div>
 
         </div>

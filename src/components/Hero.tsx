@@ -1,6 +1,7 @@
 import React from 'react';
 import { ShieldCheck, TrendingUp, Users, Award, ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
 import { AnimatedSection } from './AnimatedSection';
+import { ImagePlaceholder } from './ImagePlaceholder';
 
 interface HeroProps {
   onOpenConsultation: () => void;
@@ -16,12 +17,12 @@ export const Hero: React.FC<HeroProps> = ({
   onOpenClientPortal
 }) => {
   return (
-    <section id="home" className="relative bg-slate-50 text-slate-900 border-b border-slate-200 overflow-hidden pt-[48px] pb-[79px]">
+    <section id="home" className="group relative bg-slate-50 text-slate-900 border-b border-slate-200 overflow-hidden pt-[48px] pb-[79px]">
       {/* Background Decorative Glows */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute top-1/2 right-10 w-[400px] h-[400px] bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 group-hover:scale-105 transition-transform duration-500">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
           {/* Hero Content */}
@@ -111,11 +112,16 @@ export const Hero: React.FC<HeroProps> = ({
 
           {/* Hero Visual Card / Stats Grid */}
           <AnimatedSection animation="fade-left" delay={150} className="lg:col-span-5">
-            <div className="relative bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xl shadow-slate-200/60">
+            <div className="relative bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xl shadow-slate-200/60 hover:shadow-2xl hover:shadow-blue-500/20 transition-shadow duration-300">
               <div className="absolute -top-4 -right-4 bg-blue-600 text-white font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
                 Growth Partner
               </div>
 
+              <ImagePlaceholder
+                src="https://picsum.photos/seed/hero-card/400/200"
+                alt="Expert Advisory"
+                className="w-full h-32 mb-4"
+              />
               <h3 className="text-xl font-serif font-bold text-slate-900 mb-2">Expert Advisory at Every Stage</h3>
               <p className="text-sm text-slate-500 mb-6">From business planning and accounting systems to HR solutions, automation, and scaling.</p>
 

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { ClientProject, ProjectMilestone, ClientDocument } from '../../types';
 import { updateMilestoneStatus } from '../../lib/portalService';
 import { ProjectTimelineView } from './ProjectTimelineView';
+import { PendingDocumentReview } from './PendingDocumentReview';
+import { RecentActivityTimeline } from './RecentActivityTimeline';
 import { 
   CheckCircle2, 
   Clock, 
@@ -29,6 +31,7 @@ import {
 
 interface ProjectStatusViewProps {
   projects: ClientProject[];
+  documents: ClientDocument[];
   onOpenDocumentPreview: (doc: ClientDocument) => void;
   onOpenConsultation?: () => void;
   onOpenMessagesTab: () => void;
@@ -37,6 +40,7 @@ interface ProjectStatusViewProps {
 
 export const ProjectStatusView: React.FC<ProjectStatusViewProps> = ({
   projects,
+  documents,
   onOpenDocumentPreview,
   onOpenConsultation,
   onOpenMessagesTab,
@@ -95,6 +99,12 @@ export const ProjectStatusView: React.FC<ProjectStatusViewProps> = ({
   return (
     <div className="space-y-6">
       
+      {/* New Widgets */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <PendingDocumentReview documents={documents} />
+        <RecentActivityTimeline projects={projects} />
+      </div>
+
       {/* Project Selector (if multiple projects exist) */}
       {projects.length > 1 && (
         <div className="flex items-center space-x-2 overflow-x-auto pb-1">

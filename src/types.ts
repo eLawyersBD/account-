@@ -296,3 +296,30 @@ export interface BusinessKPI {
   description: string;
 }
 
+export interface SavedGrowthScenario {
+  id: string;
+  userId?: string;
+  name: string;
+  savedAt: string;
+  currentRevenue: number;
+  targetGrowthPercent: number;
+  grossMarginPercent: number;
+  timeframeView: '12_months' | 'multi_year';
+  timeHorizonYears: number;
+  levers: {
+    salesVelocity: boolean;
+    pricing: boolean;
+    taxOpex: boolean;
+    workingCapital: boolean;
+  };
+  metrics: {
+    revenueLift: number;
+    month12ExitOrProfit: number;
+    roiMultiple: number;
+    effectiveGrowth: number;
+    timeframeLabel: string;
+  };
+  createdAt?: any;
+  updatedAt?: any;
+}
+

@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { AnimatedSection } from './AnimatedSection';
 import { UpcomingMeetingWidget } from './UpcomingMeetingWidget';
 import { ActivityFeed } from './ActivityFeed';
+import { GrowthROICalculator } from './GrowthROICalculator';
 import { useNotifications } from '../context/NotificationContext';
 import {
   ResponsiveContainer,
@@ -127,9 +128,15 @@ interface BusinessHealthDashboardProps {
   onOpenConsultation?: (note?: string) => void;
   onOpenGoogleMeet?: () => void;
   onOpenWorkspaceSuite?: (tab?: 'drive' | 'sheets' | 'gmail' | 'calendar' | 'forms') => void;
+  onOpenClientPortal?: () => void;
 }
 
-export const BusinessHealthDashboard: React.FC<BusinessHealthDashboardProps> = ({ onOpenConsultation, onOpenGoogleMeet, onOpenWorkspaceSuite }) => {
+export const BusinessHealthDashboard: React.FC<BusinessHealthDashboardProps> = ({ 
+  onOpenConsultation, 
+  onOpenGoogleMeet, 
+  onOpenWorkspaceSuite,
+  onOpenClientPortal
+}) => {
   // Urgent Meeting Alert Logic (<1 hour)
   const { scheduledReminders } = useNotifications();
   const [now, setNow] = useState(Date.now());
@@ -175,6 +182,9 @@ export const BusinessHealthDashboard: React.FC<BusinessHealthDashboardProps> = (
       isCustom: false,
     };
   }, [scheduledReminders, now]);
+
+  // Tool View Mode (Growth ROI Calculator vs Monthly P&L Simulator)
+  const [dashboardToolMode, setDashboardToolMode] = useState<'growth_roi' | 'pnl_simulator'>('growth_roi');
 
   // Simulator Controls State
   const [monthlyRevenue, setMonthlyRevenue] = useState<number>(100000); // $100k
@@ -632,21 +642,64 @@ export const BusinessHealthDashboard: React.FC<BusinessHealthDashboardProps> = (
           </AnimatedSection>
         )}
 
-        {/* Simulator Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* Left Column: Interactive Controls */}
-          <AnimatedSection animation="fade-up" delay={100} className="lg:col-span-4 bg-slate-50 border border-slate-200/90 rounded-3xl p-6 space-y-6 shadow-sm">
+        {/* Dashboard Tool Switcher Tabs */}
+        <AnimatedSection animation="fade-up" className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
+          <div className="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 inline-flex shadow-inner">
+            <button
+              type="button"
+              onClick={() => setDashboardToolMode('growth_roi')}
+              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 cursor-pointer ${
+                dashboardToolMode === 'growth_roi'
+                  ? 'bg-white text-blue-700 shadow-sm border border-blue-200/60'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <TrendingUp className="w-4 h-4 text-blue-600" />
+              <span>Growth ROI Calculator</span>
+              <span className="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded-full font-mono">NEW</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setDashboardToolMode('pnl_simulator')}
+              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 cursor-pointer ${
+                dashboardToolMode === 'pnl_simulator'
+                  ? 'bg-white text-blue-700 shadow-sm border border-blue-200/60'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Sliders className="w-4 h-4 text-slate-600" />
+              <span>Monthly P&L & Cash Runway Simulator</span>
+            </button>
+          </div>
+        </AnimatedSection>
+
+        {/* Active Tool View */}
+        {dashboardToolMode === 'growth_roi' ? (
+          <AnimatedSection animation="fade-up" delay={100}>
+            <GrowthROICalculator
+              onOpenConsultation={onOpenConsultation}
+              onOpenMeeting={onOpenGoogleMeet}
+              onOpenWorkspaceSuite={onOpenWorkspaceSuite}
+              onOpenClientPortal={onOpenClientPortal}
+            />
+          </AnimatedSection>
+        ) : (
+          /* Simulator Grid */
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-              <div className="flex items-center space-x-2 text-slate-900 font-serif font-bold text-lg">
-                <Sliders className="w-5 h-5 text-blue-600" />
-                <span>Simulation Parameters</span>
+            {/* Left Column: Interactive Controls */}
+            <AnimatedSection animation="fade-up" delay={100} className="lg:col-span-4 bg-slate-50 border border-slate-200/90 rounded-3xl p-6 space-y-6 shadow-sm">
+              
+              <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+                <div className="flex items-center space-x-2 text-slate-900 font-serif font-bold text-lg">
+                  <Sliders className="w-5 h-5 text-blue-600" />
+                  <span>Simulation Parameters</span>
+                </div>
+                <span className="text-[11px] font-semibold text-blue-700 bg-blue-100/60 px-2.5 py-0.5 rounded-full">
+                  Real-Time
+                </span>
               </div>
-              <span className="text-[11px] font-semibold text-blue-700 bg-blue-100/60 px-2.5 py-0.5 rounded-full">
-                Real-Time
-              </span>
-            </div>
 
             {/* Slider 1: Monthly Revenue */}
             <div className="space-y-2">
@@ -833,7 +886,7 @@ export const BusinessHealthDashboard: React.FC<BusinessHealthDashboardProps> = (
               </div>
 
               {/* Card 3: Cash Runway Expansion */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-1">
+              <div className="col-span-1 sm:col-span-3 bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-1">
                 <div className="w-full h-24 bg-blue-50 rounded-xl mb-3 flex items-center justify-center text-blue-300">
                   <PieChartIcon className="w-10 h-10" />
                 </div>
@@ -1015,6 +1068,7 @@ export const BusinessHealthDashboard: React.FC<BusinessHealthDashboardProps> = (
           </AnimatedSection>
 
         </div>
+        )}
 
         {/* Interactive Strategic Growth Roadmap Section */}
         <AnimatedSection animation="fade-up" delay={300} className="mt-16 sm:mt-24 pt-12 border-t border-slate-200">

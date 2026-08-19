@@ -1,20 +1,29 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { ClientProject, ProjectMilestone, ClientDocument, MilestoneStatus, MilestonePriority } from '../../types';
-import { updateMilestoneStatus, updateMilestoneDetails, addProjectMilestone, approveMilestone } from '../../lib/portalService';
+import { ClientProject, ProjectMilestone, ClientDocument, MilestoneStatus, MilestonePriority, MilestoneComment, TimeEntry } from '../../types';
+import { 
+  updateMilestoneStatus, 
+  updateMilestoneDetails, 
+  addProjectMilestone, 
+  approveMilestone,
+  addMilestoneComment,
+  subscribeToMilestoneComments,
+  subscribeToProjectTimeEntries 
+} from '../../lib/portalService';
 import { auth } from '../../lib/firebase';
-import { subscribeToProjectTimeEntries } from '../../lib/portalService';
-import { TimeEntry } from '../../types';
 import { TimeTrackingModal } from './TimeTrackingModal';
-import { X, ArrowDown, ArrowUp, Minus } from 'lucide-react';
 import { 
   CheckCircle2, 
   Clock, 
+  Clock3,
   CircleDot, 
   Calendar, 
   FileText, 
   Sparkles, 
   Plus, 
   ArrowRight, 
+  ArrowDown,
+  ArrowUp,
+  Minus,
   ChevronRight, 
   User, 
   Layers, 
@@ -34,7 +43,8 @@ import {
   PauseCircle,
   Eye,
   Info,
-  RefreshCw
+  RefreshCw,
+  MessageSquare
 } from 'lucide-react';
 
 interface ProjectTimelineViewProps {
@@ -191,13 +201,34 @@ export const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({
     return () => unsubscribe();
   }, [project.id, auth.currentUser]);
 
-  useEffect(() => {
-    if (!activeMilestone) return;
-    const unsubscribe = subscribeToMilestoneComments(activeMilestone.id, (data) => {
-      setComments(data);
-    });
-    return () => unsubscribe();
-  }, [activeMilestone]);
+  const milestones = useMemo(() => project.milestones || [], [project.milestones]);
+
+  const filteredMilestones = useMemo(() => {
+    if (filterStatus === 'all') return milestones;
+    return milestones.filter(m => (m.status || 'upcoming').toLowerCase() === filterStatus);
+  }, [milestones, filterStatus]);
+
+  // Selected milestone object
+  const activeMilestone = useMemo(() => {
+    return milestones.find(m => m.id === selectedMilestoneId) || milestones[0] || null;
+  }, [milestones, selectedMilestoneId]);
+
+  const [editingDelayReason, setEditingDelayReason] = useState(false);
+  const [tempDelayReason, setTempDelayReason] = useState('');
+  
+  // New Milestone Form State
+  const [newTitle, setNewTitle] = useState('');
+  const [newPhase, setNewPhase] = useState('Phase 3: Deployment');
+  const [newStatus, setNewStatus] = useState<MilestoneStatus>('upcoming');
+  const [newPriority, setNewPriority] = useState<MilestonePriority>('medium');
+  const [newStartDate, setNewStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [newDueDate, setNewDueDate] = useState(
+    new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]
+  );
+  const [newDescription, setNewDescription] = useState('');
+  const [newOwner, setNewOwner] = useState(project.leadConsultantName || 'Sarah Jenkins, FCA');
+  const [newOutputs, setNewOutputs] = useState('');
+  const [formError, setFormError] = useState<string | null>(null);
 
   const handlePostComment = async () => {
     if (!newComment.trim() || !activeMilestone || !auth.currentUser) return;
@@ -221,34 +252,14 @@ export const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({
       setSavingComment(false);
     }
   };
-  const [editingDelayReason, setEditingDelayReason] = useState(false);
-  const [tempDelayReason, setTempDelayReason] = useState('');
-  
-  // New Milestone Form State
-  const [newTitle, setNewTitle] = useState('');
-  const [newPhase, setNewPhase] = useState('Phase 3: Deployment');
-  const [newStatus, setNewStatus] = useState<MilestoneStatus>('upcoming');
-  const [newPriority, setNewPriority] = useState<MilestonePriority>('medium');
-  const [newStartDate, setNewStartDate] = useState(new Date().toISOString().split('T')[0]);
-  const [newDueDate, setNewDueDate] = useState(
-    new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]
-  );
-  const [newDescription, setNewDescription] = useState('');
-  const [newOwner, setNewOwner] = useState(project.leadConsultantName || 'Sarah Jenkins, FCA');
-  const [newOutputs, setNewOutputs] = useState('');
-  const [formError, setFormError] = useState<string | null>(null);
 
-  const milestones = useMemo(() => project.milestones || [], [project.milestones]);
-
-  const filteredMilestones = useMemo(() => {
-    if (filterStatus === 'all') return milestones;
-    return milestones.filter(m => (m.status || 'upcoming').toLowerCase() === filterStatus);
-  }, [milestones, filterStatus]);
-
-  // Selected milestone object
-  const activeMilestone = useMemo(() => {
-    return milestones.find(m => m.id === selectedMilestoneId) || milestones[0] || null;
-  }, [milestones, selectedMilestoneId]);
+  useEffect(() => {
+    if (!activeMilestone) return;
+    const unsubscribe = subscribeToMilestoneComments(activeMilestone.id, (data) => {
+      setComments(data);
+    });
+    return () => unsubscribe();
+  }, [activeMilestone]);
 
   // Compute status counts for live Firestore querying display
   const completedCount = useMemo(() => milestones.filter(m => m.status === 'completed').length, [milestones]);

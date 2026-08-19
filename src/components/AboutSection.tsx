@@ -1,6 +1,7 @@
 import React from 'react';
 import { Shield, Target, CheckCircle2, Award, Briefcase, Lightbulb } from 'lucide-react';
 import { AnimatedSection } from './AnimatedSection';
+import { ImagePlaceholder } from './ImagePlaceholder';
 
 export const AboutSection: React.FC = () => {
   return (
@@ -51,7 +52,11 @@ export const AboutSection: React.FC = () => {
           {/* Right Column: Mission & Core Pillars */}
           <AnimatedSection animation="fade-left" delay={150} className="lg:col-span-6 space-y-6">
             <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-xl shadow-slate-200/50 space-y-6">
-              
+              <ImagePlaceholder
+                src="https://picsum.photos/seed/about-card/600/300"
+                alt="About Accounticca"
+                className="w-full h-48"
+              />
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
                   <Target className="w-6 h-6" />

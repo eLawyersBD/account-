@@ -172,6 +172,27 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["projectId", "milestoneId", "userId", "hours", "date"]
+    },
+    "GrowthRoiScenario": {
+      "title": "Growth ROI Scenario",
+      "description": "Saved Growth ROI Calculator comparison scenario for authenticated client",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string", "maxLength": 100 },
+        "savedAt": { "type": "string" },
+        "currentRevenue": { "type": "number", "minimum": 0 },
+        "targetGrowthPercent": { "type": "number", "minimum": 0 },
+        "grossMarginPercent": { "type": "number", "minimum": 0 },
+        "timeframeView": { "type": "string", "enum": ["12_months", "multi_year"] },
+        "timeHorizonYears": { "type": "number", "minimum": 1, "maximum": 5 },
+        "levers": { "type": "object" },
+        "metrics": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "name", "currentRevenue", "targetGrowthPercent", "grossMarginPercent"]
     }
   },
   "firestore": {
@@ -210,6 +231,10 @@
     "/articles/{articleId}": {
       "schema": { "$ref": "#/entities/Article" },
       "description": "Collection of Knowledge Center articles and guides"
+    },
+    "/growth_scenarios/{scenarioId}": {
+      "schema": { "$ref": "#/entities/GrowthRoiScenario" },
+      "description": "Saved Growth ROI Calculator comparison scenarios for authenticated users"
     }
   }
 }

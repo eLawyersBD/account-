@@ -128,7 +128,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                 />
               )}
-              <span>About Accountica</span>
+              <span>About Us</span>
             </button>
 
             {/* Services Dropdown */}
@@ -417,7 +417,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               activeSection === 'about' ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-slate-700 hover:bg-slate-50'
             }`}
           >
-            About Accountica
+            About Us
           </button>
 
           {/* Services Accordion with 9 Sub-items */}
